@@ -1,0 +1,27 @@
+{
+  "short_name": "WinkDrops",
+  "name": "WinkDrops: Anonymously Share Concern & Support",
+  "description": "WinkDrops lets you anonymously send a 'Wink' to someone you're concerned about. Our AI provides gentle insights and supportive resources to help them take the next step towards wellness.",
+  
+  "icons": [
+    {
+      "src": "./assets/images/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/images/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "theme_color": "#79c4ff",
+  "background_color": "#f8fafc"
+}
+

@@ -1,0 +1,305 @@
+openapi: 3.0.0
+info:
+  title: Winkdrops API
+  description: API for the Winkdrops application, handling AI generation and application logic.
+  version: 1.0.0
+servers:
+  - url: /api/v1
+    description: Development server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Observable:
+      type: object
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        category:
+          type: string
+          enum: ['Physical', 'Mental', 'Nutritional', 'Hygiene', 'Social', 'Behavioral']
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+
+paths:
+  /ai/wink-content:
+    post:
+      summary: Generate AI content for a Wink
+      description: Takes a list of observables and returns AI-generated insights, resources, and a disclaimer. Requires a secure, server-side Gemini API key.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                observables:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Observable'
+              example:
+                observables:
+                  - id: "p1"
+                    text: "Looks unusually tired or fatigued"
+                    category: "Physical"
+      responses:
+        '200':
+          description: Successfully generated AI content.
+          content:
+            application/json:
+              schema:
+                type: object # Full AIGeneratedContent schema
+        '400':
+          description: Bad request (e.g., no observables provided).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error during AI generation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /ai/suggestions/observables:
+    post:
+      summary: Get AI-suggested observables
+      description: Takes a free-text description and suggests relevant observables. Requires a secure, server-side Gemini API key.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+      responses:
+        '200':
+          description: A list of suggested observables.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    text:
+                      type: string
+                    category:
+                      type: string
+
+  /ai/suggestions/nudges:
+    post:
+      summary: Get AI-suggested nudge messages
+      description: Takes a context and suggests nudge messages. Requires a secure, server-side Gemini API key.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  type: string
+      responses:
+        '200':
+          description: A list of suggested nudge messages.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  
+  /ai/suggestions/wink-updates:
+    post:
+      summary: Get AI suggestions for Wink Updates
+      description: Takes original observables and suggests positive follow-up messages. Requires a secure, server-side Gemini API key.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                observables:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Observable'
+      responses:
+        '200':
+          description: A list of suggested update messages.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /ai/social-posts:
+    post:
+      summary: Generate social media posts
+      description: Generates sample social media posts based on wink context and keywords. Requires a secure, server-side Gemini API key.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                conditions:
+                  type: array
+                  items:
+                    type: object
+                resources:
+                  type: array
+                  items:
+                    type: object
+                keywords:
+                  type: string
+      responses:
+        '200':
+          description: A list of generated social media posts.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object # SocialMediaPost schema
+  
+  /ai/gift-cards:
+    post:
+      summary: Generate gift card ideas
+      description: Suggests gift cards based on a user's description. Requires a secure, server-side Gemini API key.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prompt:
+                  type: string
+      responses:
+        '200':
+          description: A list of gift card suggestions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object # GiftCardSuggestion schema
+                  
+  /ai/moderate-text:
+    post:
+      summary: Moderate user-submitted text
+      description: Checks if a custom observable is safe and appropriate. Requires a secure, server-side Gemini API key.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+      responses:
+        '200':
+          description: Moderation result.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  is_safe:
+                    type: boolean
+                  reason:
+                    type: string
+
+  /resources/local:
+    post:
+      summary: Find local resources
+      description: Finds local resources based on conditions and geolocation via Google Maps grounding. Requires a secure, server-side Gemini API key.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                conditions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                location:
+                  type: object
+                  properties:
+                    latitude:
+                      type: number
+                    longitude:
+                      type: number
+      responses:
+        '200':
+          description: Grounded local resource content.
+          content:
+            application/json:
+              schema:
+                type: object # GroundedContent schema
+                
+  /resources/social:
+    post:
+      summary: Find social resources
+      description: Finds online communities and discussions via Google Search grounding. Requires a secure, server-side Gemini API key.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                conditions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+      responses:
+        '200':
+          description: Grounded social resource content.
+          content:
+            application/json:
+              schema:
+                type: object # GroundedContent schema
