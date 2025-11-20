@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { App } from '@/App';
+import App from '@/App';
 import '@/index.css';
 
 const rootElement = document.getElementById('root');
@@ -8,7 +8,6 @@ if (!rootElement) {
   throw new Error("Could not find root element to mount to");
 }
 
-// Register the service worker for PWA functionality
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
@@ -21,9 +20,8 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Disable browser's automatic scroll restoration to allow for manual control within the app.
 if ('history' in window && 'scrollRestoration' in window.history) {
-    window.history.scrollRestoration = 'manual';
+  window.history.scrollRestoration = 'manual';
 }
 
 const root = ReactDOM.createRoot(rootElement);
