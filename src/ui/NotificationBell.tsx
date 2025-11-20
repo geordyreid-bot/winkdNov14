@@ -1,7 +1,7 @@
-export default function NotificationBell() {
-  return (
-    <div className="text-center text-gray-400 text-sm p-4">
-      NotificationBell placeholder
-    </div>
-  );
-}
+import React from 'react';
+
+const NotificationBell: React.FC<React.HTMLAttributes<HTMLDivElement>> = (props) => (
+  <div {...props} />
+);
+
+export default NotificationBell;
